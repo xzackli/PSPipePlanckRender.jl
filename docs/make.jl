@@ -7,11 +7,13 @@ makedocs(;
     modules=[PSPipePlanckRender],
     authors="Zack Li",
     repo="https://github.com/xzackli/PSPipePlanckRender.jl/blob/{commit}{path}#{line}",
-    sitename="PSPipePlanckRender.jl",
+    sitename="PSPipe Planck",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://xzackli.github.io/PSPipePlanckRender.jl",
         assets=String[],
+        edit_link=nothing,
+        footer="Markdown rendering of the [PSPipe](https://github.com/simonsobs/PSpipe) Planck project."
     ),
     pages=[
         "Home" => "index.md",
