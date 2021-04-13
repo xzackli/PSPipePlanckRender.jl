@@ -20,4 +20,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/xzackli/PSPipePlanckRender.jl",
+    devbranch="main"
 )
