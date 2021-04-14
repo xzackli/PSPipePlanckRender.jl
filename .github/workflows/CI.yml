@@ -57,12 +57,12 @@ jobs:
         env:
           PYTHON: ""
       - run: |
-          GITHUB_EVENT_NAME=push julia --project=docs -e '
+          julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using PSPipePlanckRender
             DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
             doctest(PSPipePlanckRender)'
-      - run: julia --project=docs docs/make.jl
+      - run: GITHUB_EVENT_NAME=push julia --project=docs docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
