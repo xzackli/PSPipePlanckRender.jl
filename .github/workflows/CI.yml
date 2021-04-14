@@ -67,3 +67,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           PYTHON: ""
+          GITHUB_EVENT_NAME: "push"
