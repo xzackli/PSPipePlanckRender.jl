@@ -4,8 +4,18 @@ using PyPlot
 PyPlot.svg(true)
 rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
 rcParams["font.family"] = "Latin Modern Roman"
-rcParams["figure.figsize"] = [4.0, 3.0]
-rcParams["figure.dpi"] = 200
+
+SMALL_SIZE = 12
+MEDIUM_SIZE = 15
+BIGGER_SIZE = 18
+rcParams["font.size"] = SMALL_SIZE
+rcParams["axes.titlesize"] = SMALL_SIZE
+rcParams["axes.labelsize"] = MEDIUM_SIZE
+rcParams["xtick.labelsize"] = SMALL_SIZE
+rcParams["ytick.labelsize"] = SMALL_SIZE
+rcParams["legend.fontsize"] = SMALL_SIZE
+rcParams["figure.titlesize"] = BIGGER_SIZE
+
 
 DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
 
