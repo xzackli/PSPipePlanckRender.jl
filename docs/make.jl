@@ -3,7 +3,7 @@ using Documenter
 using PyPlot
 PyPlot.svg(true)
 rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
-rcParams["font.family"] = "lmroman"
+rcParams["font.family"] = "Latin Modern Roman"
 
 DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
 
