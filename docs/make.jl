@@ -1,5 +1,6 @@
 using PSPipePlanckRender
 using Documenter
+using PyPlot
 
 DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
 
