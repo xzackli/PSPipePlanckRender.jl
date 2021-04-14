@@ -6,8 +6,8 @@ rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
 rcParams["font.family"] = "Latin Modern Roman"
 
 SMALL_SIZE = 12
-MEDIUM_SIZE = 15
-BIGGER_SIZE = 18
+MEDIUM_SIZE = 17
+BIGGER_SIZE = 17
 rcParams["font.size"] = SMALL_SIZE
 rcParams["axes.titlesize"] = SMALL_SIZE
 rcParams["axes.labelsize"] = MEDIUM_SIZE
