@@ -58,6 +58,8 @@ jobs:
           PYTHON: ""
       - run: |
           julia --project=docs -e '
+            using Conda
+            Conda.add("r-tinytex"; channel="conda-forge")
             using Documenter: DocMeta, doctest
             using PSPipePlanckRender
             DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
