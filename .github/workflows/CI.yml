@@ -54,12 +54,13 @@ jobs:
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
+          wget https://github.com/jagd/fakebold/releases/download/v1.1/thick-lm-otf.zip
+          unzip thick-lm-otf.zip
+          mv *.otf .fonts
         env:
           PYTHON: ""
       - run: |
           julia --project=docs -e '
-            using Conda
-            Conda.add("r-tinytex"; channel="conda-forge")
             using Documenter: DocMeta, doctest
             using PSPipePlanckRender
             DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
