@@ -4,6 +4,8 @@ using PyPlot
 PyPlot.svg(true)
 rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
 rcParams["font.family"] = "Latin Modern Roman"
+rcParams["figure.figsize"] = [4.0, 3.0]
+rcParams["figure.dpi"] = 200
 
 DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
 
