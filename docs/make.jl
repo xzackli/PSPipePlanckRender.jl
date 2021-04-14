@@ -2,6 +2,8 @@ using PSPipePlanckRender
 using Documenter
 using PyPlot
 PyPlot.svg(true)
+rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
+rcParams["text.usetex"] = true
 
 DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
 
