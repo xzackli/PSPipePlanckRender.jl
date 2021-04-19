@@ -1,4 +1,5 @@
 using Documenter, Literate
+using PSPipePlanckRender
 ENV["PLOTS_DEFAULT_BACKEND"] = "GR"
 ENV["GKSwstype"]="nul"
 using Plots
@@ -45,8 +46,6 @@ makedocs(
     pages = [
         "Introduction" => "index.md",
         "Setup" => "setup.md",
-        "Raw Spectra" => "rawspectra.md",
-        "Test" => "test.md"
+        "Raw Spectra" => "rawspectra.md"
         ]
     )
-    

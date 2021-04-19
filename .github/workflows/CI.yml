@@ -47,13 +47,8 @@ jobs:
         with:
           version: '1'
       - run: |
-          wget https://github.com/jagd/fakebold/releases/download/v1.1/thick-lm-otf.zip
-          unzip thick-lm-otf.zip
-          mkdir ~/.fonts
-          mv *.otf ~/.fonts
-      - run: |
           git clone --branch planckcov https://github.com/simonsobs/PSpipe.git
-          cp -r PSpipe/project/Planck_cov/src docs/lit
+          cp -r PSpipe/project/Planck_cov/docs/* docs/
       - run: |
           julia --project=docs -e '
             using Pkg
@@ -61,6 +56,8 @@ jobs:
             Pkg.instantiate()'
         env:
           PYTHON: ""
+      - run: julia --project=. -e 'using Pkg; Pkg.add(PackageSpec(name="Healpix", rev="master")); Pkg.instantiate()'
+      - run: julia --project=. -e 'using Pkg; Pkg.add(PackageSpec(name="PowerSpectra", rev="master")); Pkg.instantiate()'
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
