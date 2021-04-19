@@ -48,7 +48,7 @@ jobs:
           version: '1'
       - run: |
           git clone --branch planckcov https://github.com/simonsobs/PSpipe.git
-          cp -r PSpipe/project/Planck_cov/docs/* docs/
+          cp -r PSpipe/project/Planck_cov/docs/* .
       - run: |
           julia --project=docs -e '
             using Pkg
