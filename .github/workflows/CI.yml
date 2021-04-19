@@ -62,6 +62,7 @@ jobs:
           mkdir docs/lit
           cp -r PSpipe/project/Planck_cov/src/* docs/lit/
           ls docs/
+      - run: julia --project=docs docs/lit/setup.jl docs/src/example.toml
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
