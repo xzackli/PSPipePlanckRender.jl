@@ -53,8 +53,8 @@ jobs:
             Pkg.instantiate()'
         env:
           PYTHON: ""
-      - run: julia --project=. -e 'using Pkg; Pkg.add(PackageSpec(name="Healpix", rev="master")); Pkg.instantiate()'
-      - run: julia --project=. -e 'using Pkg; Pkg.add(url="https://github.com/xzackli/PowerSpectra.jl.git"); Pkg.instantiate()'
+      - run: julia --project=docs -e 'using Pkg; Pkg.add(PackageSpec(name="Healpix", rev="master")); Pkg.instantiate()'
+      - run: julia --project=docs -e 'using Pkg; Pkg.add(url="https://github.com/xzackli/PowerSpectra.jl.git"); Pkg.instantiate()'
       - run: |
           git clone --branch planckcov https://github.com/simonsobs/PSpipe.git
           cp -r PSpipe/project/Planck_cov/docs/* docs/
