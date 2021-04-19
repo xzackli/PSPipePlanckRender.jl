@@ -48,3 +48,9 @@ makedocs(
         "Raw Spectra" => "rawspectra.md"
         ]
     )
+
+
+deploydocs(;
+    repo="github.com/xzackli/PSPipePlanckRender.jl",
+    devbranch="main"
+)
