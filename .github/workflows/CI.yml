@@ -57,7 +57,7 @@ jobs:
         env:
           PYTHON: ""
       - run: julia --project=. -e 'using Pkg; Pkg.add(PackageSpec(name="Healpix", rev="master")); Pkg.instantiate()'
-      - run: julia --project=. -e 'using Pkg; Pkg.add(PackageSpec(name="PowerSpectra", rev="master")); Pkg.instantiate()'
+      - run: julia --project=. -e 'using Pkg; Pkg.add("https://github.com/xzackli/PowerSpectra.jl.git"); Pkg.instantiate()'
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
