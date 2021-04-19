@@ -1,42 +1,52 @@
-using PSPipePlanckRender
-using Documenter
-using PyPlot
-PyPlot.svg(true)
-rcParams = PyPlot.PyDict(PyPlot.matplotlib."rcParams")
-rcParams["font.family"] = "Latin Modern Roman"
+using Documenter, Literate
+ENV["PLOTS_DEFAULT_BACKEND"] = "GR"
+ENV["GKSwstype"]="nul"
+using Plots
+using Plots.PlotMeasures: mm
 
-SMALL_SIZE = 12
-MEDIUM_SIZE = 17
-BIGGER_SIZE = 17
-rcParams["font.size"] = SMALL_SIZE
-rcParams["axes.titlesize"] = SMALL_SIZE
-rcParams["axes.labelsize"] = MEDIUM_SIZE
-rcParams["xtick.labelsize"] = SMALL_SIZE
-rcParams["ytick.labelsize"] = SMALL_SIZE
-rcParams["legend.fontsize"] = SMALL_SIZE
-rcParams["figure.titlesize"] = BIGGER_SIZE
+default(
+    fontfamily = "Computer Modern", linewidth=1.5,
+    titlefontsize=(16+8), guidefontsize=(11+5), 
+    tickfontsize=(8+4), legendfontsize=(8+4),
+    left_margin=5mm, right_margin=5mm)
 
+src = joinpath(@__DIR__, "src")
+lit = joinpath(@__DIR__, "lit")
 
-DocMeta.setdocmeta!(PSPipePlanckRender, :DocTestSetup, :(using PSPipePlanckRender); recursive=true)
+config = Dict(
+    "credit" => false,  # credit is configured to render in Documenter instead
+    "repo_root_url"=> "https://github.com/simonsobs/PSpipe/tree/planckcov/project/Planck_cov",
+)
 
-makedocs(;
-    modules=[PSPipePlanckRender],
-    authors="Zack Li",
-    repo="https://github.com/xzackli/PSPipePlanckRender.jl/blob/{commit}{path}#{line}",
-    sitename="PSPipe Planck",
-    format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://xzackli.github.io/PSPipePlanckRender.jl",
-        assets=String[],
-        # edit_link=nothing,
-        footer="Markdown rendering of the [PSPipe](https://github.com/simonsobs/PSpipe) Planck project using [Literate](https://fredrikekre.github.io/Literate.jl/) and [Documenter](https://juliadocs.github.io/Documenter.jl/dev/)."
+nonexecute_config = copy(config)
+nonexecute_config["codefence"] = "```julia" => "```"
+execution_exclusion = []
+
+for (root, _, files) ∈ walkdir(lit), file ∈ files
+    splitext(file)[2] == ".jl" || continue
+    ipath = joinpath(root, file)
+    opath = splitdir(replace(ipath, lit=>src))[1]
+    if file ∉ execution_exclusion
+        Literate.markdown(ipath, opath; config=config)
+    else
+        @warn("not executing unless forced for ", file)
+        Literate.markdown(ipath, opath; config=nonexecute_config)
+    end
+end
+
+makedocs(
+    sitename = "PSPipe Planck",
+    modules = Module[],
+    
+    format=Documenter.HTML(
+        prettyurls=get(ENV, "CI", nothing) == "true",
+        assets=["assets/so.css"],
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
-)
-
-deploydocs(;
-    repo="github.com/xzackli/PSPipePlanckRender.jl",
-    devbranch="main"
-)
+    pages = [
+        "Introduction" => "index.md",
+        "Setup" => "setup.md",
+        "Raw Spectra" => "rawspectra.md",
+        "Test" => "test.md"
+        ]
+    )
+    

@@ -53,7 +53,7 @@ jobs:
           mv *.otf ~/.fonts
       - run: |
           git clone --branch planckcov https://github.com/simonsobs/PSpipe.git
-          cp PSpipe/project/Planck_cov/md/test.md docs/src/index.md
+          cp -r PSpipe/project/Planck_cov/src docs/lit
       - run: |
           julia --project=docs -e '
             using Pkg
