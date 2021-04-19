@@ -57,6 +57,7 @@ jobs:
       - run: julia --project=. -e 'using Pkg; Pkg.add(url="https://github.com/xzackli/PowerSpectra.jl.git"); Pkg.instantiate()'
       - run: |
           git clone --branch planckcov https://github.com/simonsobs/PSpipe.git
+          mkdir docs/lit
           cp -r PSpipe/project/Planck_cov/docs/* docs/
           ls docs/
       - run: |

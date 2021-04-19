@@ -1,5 +1,4 @@
 using Documenter, Literate
-using PSPipePlanckRender
 ENV["PLOTS_DEFAULT_BACKEND"] = "GR"
 ENV["GKSwstype"]="nul"
 using Plots
