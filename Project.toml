@@ -1,7 +1,7 @@
 name = "PSPipePlanckRender"
 uuid = "b1e2d088-1f9c-4abc-8edc-d415bc3cfb69"
 authors = ["Zack Li"]
-version = "0.1.0"
+version = "0.1.2"
 
 [compat]
 julia = "1.6"
