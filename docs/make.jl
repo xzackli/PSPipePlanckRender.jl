@@ -21,7 +21,6 @@ config = Dict(
 nonexecute_config = copy(config)
 nonexecute_config["codefence"] = "```julia" => "```"
 execution_exclusion = []
-cp(joinpath(@__DIR__, "..", "src", "util.jl"), joinpath(@__DIR__, "build", "util.jl"); force=true)
 
 for (root, _, files) ∈ walkdir(lit), file ∈ files
     splitext(file)[2] == ".jl" || continue
