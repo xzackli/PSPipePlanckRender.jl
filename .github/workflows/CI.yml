@@ -67,6 +67,9 @@ jobs:
       - run: julia --project=docs docs/lit/setup.jl docs/src/example.toml
       - run: julia --project=docs PSpipe/project/Planck_cov/scripts/precook.jl docs/src/example.toml
       - run: |
+          mkdir docs/build
+          cp ../src/util.jl build/util.jl
+      - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using PSPipePlanckRender
