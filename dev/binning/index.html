@@ -4,17 +4,48 @@
 # get modules and utility functions
 using Plots
 using TOML
+using Healpix
 include(&quot;util.jl&quot;)
 
 config = TOML.parsefile(configfile)
 nside = config[&quot;general&quot;][&quot;nside&quot;]
 lmax = nside2lmax(nside)
 
+pl = PlanckReferenceCov(joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;plicref&quot;))
+
 # read binning scheme
 binfile = joinpath(config[&quot;dir&quot;][&quot;pspipe_project&quot;], &quot;input&quot;, &quot;binused.dat&quot;)
-P, lb = util_planck_binning(binfile; lmax=lmax)
+P, lb = util_planck_binning(binfile; lmax=lmax);
 
 #
-bl = util_planck_beam_bl(&quot;100&quot;, &quot;hm1&quot;, &quot;100&quot;, &quot;hm2&quot;, :TT, :TT;
+freq1, freq2 = &quot;100&quot;, &quot;100&quot;
+bl = util_planck_beam_bl(freq1, &quot;hm1&quot;, freq2, &quot;hm2&quot;, :EE, :EE;
     lmax=lmax, beamdir=config[&quot;dir&quot;][&quot;beam&quot;])
-plot(bl, yaxis=:log10, label=&quot;\$B_{\\ell}\$&quot;)</code></pre></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 20 April 2021 23:15">Tuesday 20 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+plot(bl, yaxis=:log10, label=&quot;\$B_{\\ell}\$&quot;)
+
+#
+run_name = config[&quot;general&quot;][&quot;name&quot;]
+mapids = [k for k in keys(config[&quot;map&quot;])]
+spectrapath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;rawspectra&quot;)
+
+mapid1 = &quot;P$(freq1)hm1&quot;
+mapid2 = &quot;P$(freq2)hm2&quot;
+spec = DataFrame(CSV.File(joinpath(spectrapath,&quot;$(run_name)_$(mapid1)x$(mapid2).csv&quot;)))
+plot(spec.ell, spec.ell.^2 .* spec.EE, label=&quot;$(run_name)_$(mapid1)x$(mapid2)&quot;,
+    xlabel=&quot;multipole moment&quot;, ylabel=&quot;\$\\ell^2 C_{\\ell}^{EE}\$&quot;, xlim=(0,2nside))
+
+#
+lbref, cbref, err_ref, _ = extract_spec_and_cov(pl, &quot;EE_$(freq1)x$(freq2)&quot;)
+
+#
+cl = SpectralVector(copy(spec.EE))
+this_lmax = max(lastindex(cl), lastindex(bl))
+pixwinT, pixwinP = pixwin(nside; pol=true)
+cl[0:this_lmax] ./= bl[0:this_lmax] .* pixwinP[1:(this_lmax+1)].^2
+cl[0:1] .= 0.0
+cb = P * parent(cl)
+planck_bin_choice = findfirst(lb .≥ lbref[1]):findlast(lb .≤ lbref[end])
+
+nside_cut = 1:length(planck_bin_choice)
+plot(lb[planck_bin_choice], (cb[planck_bin_choice] .- cbref[nside_cut]) ./ err_ref[nside_cut],
+    ylim=(-2,2), label=label=&quot;$(run_name)_$(mapid1)x$(mapid2)&quot;)</code></pre></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 21 April 2021 02:40">Wednesday 21 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

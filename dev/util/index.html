@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Utilities · PSPipe Planck</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/so.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">PSPipe Planck</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../setup/">setup.jl</a></li><li><a class="tocitem" href="../rawspectra/">rawspectra.jl</a></li><li><a class="tocitem" href="../spectra_slurmgen/">spectra_slurmgen.jl</a></li><li><a class="tocitem" href="../pipeline/">Pipeline</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Utilities</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Utilities</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/simonsobs/PSpipe/tree/planckcov/project/Planck_cov/src/util.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Utilities"><a class="docs-heading-anchor" href="#Utilities">Utilities</a><a id="Utilities-1"></a><a class="docs-heading-anchor-permalink" href="#Utilities" title="Permalink"></a></h1><p>Unlike every other file in the pipeline, this file is not intended to be run directly. Instead, include this in other files.</p><pre><code class="language-julia">using PowerSpectra
 using DataFrames, CSV
-
+using DelimitedFiles
+using LinearAlgebra
 
 function util_planck_binning(binfile; lmax=6143)
     bin_df = DataFrame(CSV.File(binfile;
         header=false, delim=&quot; &quot;, ignorerepeated=true))
-
-    # bin centers and binning matrix
     lb = (bin_df[:,1] .+ bin_df[:,2]) ./ 2
     P = binning_matrix(bin_df[:,1], bin_df[:,2], ℓ -&gt; ℓ*(ℓ+1) / (2π); lmax=lmax)
-    return P, lb
+    return P, lb[1:size(P,1)]
 end
 
 
@@ -44,4 +43,50 @@ end
 util_planck_beam_bl(T::Type, freq1, split1, freq2, split2, spec1; kwargs...) =
     util_planck_beam_bl(T, freq1, split1, freq2, split2, spec1, spec1; kwargs...)
 util_planck_beam_bl(freq1::String, split1, freq2, split2, spec1, spec2; kwargs...) =
-    util_planck_beam_bl(Float64, freq1, split1, freq2, split2, spec1, spec2; kwargs...)</code></pre><pre class="documenter-example-output">util_planck_beam_bl (generic function with 3 methods)</pre></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 20 April 2021 23:15">Tuesday 20 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    util_planck_beam_bl(Float64, freq1, split1, freq2, split2, spec1, spec2; kwargs...)
+
+
+struct PlanckReferenceCov{T}
+    cov::Array{T,2}
+    ells::Vector{Int}
+    cls::Vector{T}
+    keys::Vector{String}
+    sub_indices::Vector{Int}
+    key_index_dict::Dict{String,Int}
+end
+
+function PlanckReferenceCov(plicrefpath)
+    ellspath = joinpath(plicrefpath, &quot;vec_all_spectra.dat&quot;)
+    clpath = joinpath(plicrefpath, &quot;data_extracted.dat&quot;)
+    covpath = joinpath(plicrefpath, &quot;covmat.dat&quot;)
+    keys = [&quot;TT_100x100&quot;, &quot;TT_143x143&quot;, &quot;TT_143x217&quot;, &quot;TT_217x217&quot;, &quot;EE_100x100&quot;,
+        &quot;EE_100x143&quot;, &quot;EE_100x217&quot;, &quot;EE_143x143&quot;, &quot;EE_143x217&quot;, &quot;EE_217x217&quot;, &quot;TE_100x100&quot;,
+        &quot;TE_100x143&quot;, &quot;TE_100x217&quot;, &quot;TE_143x143&quot;, &quot;TE_143x217&quot;, &quot;TE_217x217&quot;]
+    cov = inv(readdlm(covpath))
+    ells = readdlm(ellspath)[:,1]
+    cls = readdlm(clpath)[:,2]
+
+    subarray_indices = collect(0:(size(cov,1)-2))[findall(diff(ells) .&lt; 0) .+ 1] .+ 1
+    sub_indices = [1, subarray_indices..., length(cls)+1]
+    key_ind = 1:length(keys)
+    key_index_dict = Dict(keys .=&gt; key_ind)
+
+    return PlanckReferenceCov{Float64}(cov, ells, cls, keys, sub_indices, key_index_dict)
+end
+
+function get_subcov(pl::PlanckReferenceCov, spec1, spec2)
+    i = pl.key_index_dict[spec1]
+    j = pl.key_index_dict[spec2]
+    return pl.cov[
+        pl.sub_indices[i] : (pl.sub_indices[i + 1] - 1),
+        pl.sub_indices[j] : (pl.sub_indices[j + 1] - 1),
+    ]
+end
+function extract_spec_and_cov(pl::PlanckReferenceCov, spec1)
+    i = pl.key_index_dict[spec1]
+    this_subcov = get_subcov(pl, spec1, spec1)
+    ells = pl.ells[pl.sub_indices[i]:(pl.sub_indices[i + 1] - 1)]
+    cl = pl.cls[pl.sub_indices[i]:(pl.sub_indices[i + 1] - 1)]
+    err = sqrt.(diag(this_subcov))
+    return ells, cl, err, this_subcov
+end</code></pre><pre class="documenter-example-output">extract_spec_and_cov (generic function with 1 method)</pre></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 21 April 2021 02:40">Wednesday 21 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

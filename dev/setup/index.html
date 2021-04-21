@@ -75,4 +75,20 @@ Extant, skip /tmp/planck256/masks/nside256_COM_Mask_Likelihood-polarization-143-
 Extant, skip /tmp/planck256/masks/nside256_COM_Mask_Likelihood-polarization-217-hm1_2048_R3.00.fits
 Extant, skip /tmp/planck256/masks/nside256_COM_Mask_Likelihood-polarization-100-hm2_2048_R3.00.fits
 Extant, skip /tmp/planck256/masks/nside256_COM_Mask_Likelihood-polarization-217-hm2_2048_R3.00.fits
-Extant, skip /tmp/planck256/beams/HFI_RIMO_BEAMS_R3.01.tar.gz</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Introduction</a><a class="docs-footer-nextpage" href="../rawspectra/">rawspectra.jl »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 20 April 2021 23:15">Tuesday 20 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Extant, skip /tmp/planck256/beams/HFI_RIMO_BEAMS_R3.01.tar.gz</pre><pre><code class="language-julia"># We also want to retrieve the plic templates.
+plicrefdir = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;])
+plicreffile = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;plicref.tar.gz&quot;)
+download_if_necessary(
+    &quot;https://github.com/xzackli/PSPipePlanckRender.jl/releases/download/0.1.2/plicref.tar.gz&quot;,
+    plicreffile)
+run(`tar -xzvf $(plicreffile) --overwrite -C $(plicrefdir)`);</code></pre><pre class="documenter-example-output">Extant, skip /tmp/planck256/plicref.tar.gz
+plicref/
+plicref/base_plikHM_TTTEEE_lowl_lowE_lensing.minimum.plik_foregrounds
+plicref/covmat.dat
+plicref/data_extracted.dat
+plicref/EE_e2e_cnoise.ermform.dat
+plicref/foreground_cl.txt
+plicref/leakage.ermform.dat
+plicref/subpix.ermform.dat
+plicref/theory_cl.txt
+plicref/vec_all_spectra.dat</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Introduction</a><a class="docs-footer-nextpage" href="../rawspectra/">rawspectra.jl »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 21 April 2021 02:40">Wednesday 21 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
