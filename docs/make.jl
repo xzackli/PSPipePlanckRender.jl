@@ -45,6 +45,7 @@ makedocs(
     pages = [
         "Introduction" => "index.md",
         "setup.jl" => "setup.md",
+        "util.jl" => "util.md",
         "rawspectra.jl" => "rawspectra.md",
         "spectra_slurmgen.jl" => "spectra_slurmgen.md",
 
