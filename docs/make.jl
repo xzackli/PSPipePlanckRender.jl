@@ -38,7 +38,7 @@ end
 makedocs(
     sitename = "PSPipe Planck",
     modules = Module[],
-    
+    clean=false,
     format=Documenter.HTML(
         prettyurls=get(ENV, "CI", nothing) == "true",
         assets=["assets/so.css"],
