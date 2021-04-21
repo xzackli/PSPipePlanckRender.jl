@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>fitnoisemodel.jl · PSPipe Planck</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/so.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">PSPipe Planck</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../setup/">setup.jl</a></li><li><a class="tocitem" href="../util/">util.jl</a></li><li><a class="tocitem" href="../rawspectra/">rawspectra.jl</a></li><li><a class="tocitem" href="../spectra_slurmgen/">spectra_slurmgen.jl</a></li><li class="is-active"><a class="tocitem" href>fitnoisemodel.jl</a></li><li><a class="tocitem" href="../pipeline/">Pipeline</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>fitnoisemodel.jl</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>fitnoisemodel.jl</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/simonsobs/PSpipe/tree/planckcov/project/Planck_cov/src/fitnoisemodel.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia">configfile, freq, spec = ARGS</code></pre><pre class="documenter-example-output">3-element Vector{String}:
+ &quot;example.toml&quot;
+ &quot;100&quot;
+ &quot;EE&quot;</pre><h1 id="fitnoisemodel"><a class="docs-heading-anchor" href="#fitnoisemodel">Fit Noise Model (fitnoisemodel.jl)</a><a id="fitnoisemodel-1"></a><a class="docs-heading-anchor-permalink" href="#fitnoisemodel" title="Permalink"></a></h1><pre><code class="language-"># setup data
+using Plots
+using TOML
+using BlackBoxOptim
+include(&quot;util.jl&quot;)
+
+config = TOML.parsefile(configfile)
+nside = config[&quot;general&quot;][&quot;nside&quot;]
+run_name = config[&quot;general&quot;][&quot;name&quot;]
+spectrapath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;rawspectra&quot;)
+XY = Symbol(spec)
+lmax = min(2508,nside2lmax(nside))
+
+Cl11 = DataFrame(CSV.File(joinpath(spectrapath,&quot;$(run_name)_P$(freq)hm1xP$(freq)hm1.csv&quot;)));
+Cl12 = DataFrame(CSV.File(joinpath(spectrapath,&quot;$(run_name)_P$(freq)hm1xP$(freq)hm2.csv&quot;)));
+Cl22 = DataFrame(CSV.File(joinpath(spectrapath,&quot;$(run_name)_P$(freq)hm2xP$(freq)hm2.csv&quot;)));
+
+truncate(vec::Vector, lmax) = SpectralVector(vec[firstindex(vec):(lmax+1)])
+truncate(vec::SpectralVector, lmax) = vec[IdentityRange(firstindex(vec):lmax)]
+
+cl11 = truncate(Cl11[!,XY], lmax)
+cl12 = truncate(Cl12[!,XY], lmax)
+cl22 = truncate(Cl22[!,XY], lmax)
+
+Wl11 = util_planck_beam_Wl(freq, &quot;hm1&quot;, freq, &quot;hm1&quot;, XY, XY;
+    lmax=lmax, beamdir=config[&quot;dir&quot;][&quot;beam&quot;])
+Wl12 = util_planck_beam_Wl(freq, &quot;hm1&quot;, freq, &quot;hm2&quot;, XY, XY;
+    lmax=lmax, beamdir=config[&quot;dir&quot;][&quot;beam&quot;])
+Wl22 = util_planck_beam_Wl(freq, &quot;hm2&quot;, freq, &quot;hm2&quot;, XY, XY;
+    lmax=lmax, beamdir=config[&quot;dir&quot;][&quot;beam&quot;])
+
+Wl11, Wl12, Wl22 = map(v-&gt;truncate(v,lmax), (Wl11, Wl12, Wl22))
+
+cl = cl12 ./ Wl12
+nl1 = (cl11 ./ Wl11 .- cl) .* Wl11
+nl2 = (cl22 ./ Wl22  .- cl) .* Wl22;
+
+ell = eachindex(cl)
+plot(ell, ell.^2 .* cl12, label=&quot;unbeamed $(run_name) $(freq) $(spec)&quot;,
+    xlabel=&quot;multipole moment&quot;, ylabel=&quot;\$\\ell^2 C_{\\ell}^{$spec}\$&quot;, xlim=(0,lmax))</code></pre><pre><code class="language-julia">@. camspec_model(ℓ, α) =
+    α[1] * (100. / ℓ)^α[2] + α[3] * (ℓ / 1000.)^α[4] / ( 1 + (ℓ / α[5])^α[6] )^α[7]</code></pre><pre class="documenter-example-output">camspec_model (generic function with 1 method)</pre><pre><code class="language-julia">function fit_bb_model(model, p0, xl, yl, signal; kwargs...)
+    lower = map(x -&gt; x-0.9abs(x), p0)
+    upper = map(x -&gt; x+0.9abs(x), p0)
+    like(α) = (sum((2 .* xl .+ 1) ./ (model(xl, p0).^2 .+ signal.^2) .* (model(xl, α) .- yl).^2))
+    println(&quot;starting opt &quot;, like(p0))
+    res = bboptimize(like; SearchRange=map((i,j)-&gt;(i,j), lower, upper), NumDimensions = length(p0),
+        MaxFuncEvals=50_000, TraceInterval=20)
+    return best_candidate(res)
+end</code></pre><pre class="documenter-example-output">fit_bb_model (generic function with 1 method)</pre><pre><code class="language-">p0_1 = readdlm(joinpath(config[&quot;dir&quot;][&quot;pspipe_project&quot;], &quot;output&quot;,
+        &quot;planck_noise_coeffs&quot;, &quot;$(freq)_hm1_$(spec)_coeff.dat&quot;))[:,1]
+p0_2 = readdlm(joinpath(config[&quot;dir&quot;][&quot;pspipe_project&quot;], &quot;output&quot;,
+        &quot;planck_noise_coeffs&quot;, &quot;$(freq)_hm2_$(spec)_coeff.dat&quot;))[:,1]</code></pre><pre><code class="language-">min_ell_ind = 31 # lmin=30
+pfit_1 = fit_bb_model(camspec_model, p0_1,
+    parent(ell)[min_ell_ind:end], parent(nl1)[min_ell_ind:end], parent(cl)[min_ell_ind:end])
+pfit_2 = fit_bb_model(camspec_model, p0_2,
+    parent(ell)[min_ell_ind:end], parent(nl2)[min_ell_ind:end], parent(cl)[min_ell_ind:end])</code></pre><pre><code class="language-">mean(x) = sum(x) / length(x)
+plot((nl1), alpha=0.5, label=&quot;nl hm1&quot;)
+plot!(2:lmax, [camspec_model(ℓ, p0_1) for ℓ in 2:lmax], ylim=(0.0, 4mean(abs.(nl1))), label=&quot;initial model&quot;)
+plot!(2:lmax, [camspec_model(ℓ, pfit_1) for ℓ in 2:lmax], label=&quot;fitted model&quot;, linestyle=:dash)</code></pre><pre><code class="language-">plot((nl2), alpha=0.5, label=&quot;nl hm2&quot;)
+plot!(2:lmax, [camspec_model(ℓ, p0_2) for ℓ in 2:lmax], ylim=(0.0, 2mean(nl2)), label=&quot;initial model&quot;)
+plot!(2:lmax, [camspec_model(ℓ, pfit_2) for ℓ in 2:lmax], ylim=(0.0, 2mean(nl2)), label=&quot;fitted model&quot;, linestyle=:dash)</code></pre><pre><code class="language-">coefficientpath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;noise_model_coeffs&quot;)
+mkpath(coefficientpath)
+
+open(joinpath(coefficientpath, &quot;$(run_name)_$(freq)_$(spec)_hm1.dat&quot;), &quot;w&quot;) do io
+   writedlm(io, pfit_1)
+end
+open(joinpath(coefficientpath, &quot;$(run_name)_$(freq)_$(spec)_hm2.dat&quot;), &quot;w&quot;) do io
+   writedlm(io, pfit_2)
+end</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../spectra_slurmgen/">« spectra_slurmgen.jl</a><a class="docs-footer-nextpage" href="../pipeline/">Pipeline »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 21 April 2021 20:58">Wednesday 21 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
