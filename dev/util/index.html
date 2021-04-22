@@ -98,7 +98,7 @@ plic_ellranges() = Dict(
     (:TE, &quot;100&quot;, &quot;217&quot;) =&gt; (505, 999),
     (:TE, &quot;143&quot;, &quot;143&quot;) =&gt; (30, 1996),
     (:TE, &quot;143&quot;, &quot;217&quot;) =&gt; (505, 1996),
-    (:TE, &quot;217&quot;, &quot;217&quot;) =&gt; (505, 1996))</code></pre><pre class="documenter-example-output">plic_ellranges (generic function with 1 method)</pre><h2 id="Signal-Spectra"><a class="docs-heading-anchor" href="#Signal-Spectra">Signal Spectra</a><a id="Signal-Spectra-1"></a><a class="docs-heading-anchor-permalink" href="#Signal-Spectra" title="Permalink"></a></h2><p>The covariance matrix calculation and and signal simulations require an assumed signal spectra. We use the same foreground spectra as used in the <span>$\text{plic}$</span> likelihood. This returns dictionaries for signal and theory <span>$C_{\ell}$</span> in <span>$\mu\mathrm{K}$</span> between two frequencies. The data is stored in the <code>plicref</code> directory in the config.</p><pre><code class="language-">function signal_and_theory(freq1, freq2, config::Dict)
+    (:TE, &quot;217&quot;, &quot;217&quot;) =&gt; (505, 1996))</code></pre><pre class="documenter-example-output">plic_ellranges (generic function with 1 method)</pre><h2 id="Signal-Spectra"><a class="docs-heading-anchor" href="#Signal-Spectra">Signal Spectra</a><a id="Signal-Spectra-1"></a><a class="docs-heading-anchor-permalink" href="#Signal-Spectra" title="Permalink"></a></h2><p>The covariance matrix calculation and and signal simulations require an assumed signal spectra. We use the same foreground spectra as used in the <span>$\text{plic}$</span> likelihood. This returns dictionaries for signal and theory <span>$C_{\ell}$</span> in <span>$\mu\mathrm{K}$</span> between two frequencies. The data is stored in the <code>plicref</code> directory in the config.</p><pre><code class="language-julia">function signal_and_theory(freq1, freq2, config::Dict)
     likelihood_data_dir = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;plicref&quot;)
     th = read_commented_header(joinpath(likelihood_data_dir,&quot;theory_cl.txt&quot;))
     fg = read_commented_header(joinpath(likelihood_data_dir,
@@ -107,7 +107,9 @@ plic_ellranges() = Dict(
     ranges = plic_ellranges()
     for (spec, f1, f2) in plic_order()
         lmin, lmax = ranges[spec, f1, f2]
-        const_val = fg[lmax-1,&quot;$(spec)$(f1)X$(f2)&quot;]</code></pre><p>constant foreground level after lmax – there are fitting artifacts otherwise</p><pre><code class="language-">        fg[(lmax-1):end, &quot;$(spec)$(f1)X$(f2)&quot;] .= const_val
+        const_val = fg[lmax-1,&quot;$(spec)$(f1)X$(f2)&quot;]
+        # constant foreground level after lmax -- there are fitting artifacts otherwise
+        fg[(lmax-1):end, &quot;$(spec)$(f1)X$(f2)&quot;] .= const_val
     end
 
     # loop over spectra and also fill in the flipped name
@@ -128,7 +130,7 @@ plic_ellranges() = Dict(
     signal_dict = Dict{String,Vector{Float64}}()
     theory_dict = Dict{String,Vector{Float64}}()
 
-    for XY₀ in specs  # XY₀ is the spectrum to store
+    for XY₀ in specs  ## XY₀ is the spectrum to store
         f₁, f₂ = parse(Int, freq1), parse(Int, freq2)
         if f₁ &lt;= f₂
             XY = XY₀
@@ -147,7 +149,7 @@ plic_ellranges() = Dict(
         theory_dict[XY₀] =  ap(theory_cl_XY)
     end
     return signal_dict, theory_dict
-end</code></pre><h2 id="Planck-\\texttt{plic}-Reference"><a class="docs-heading-anchor" href="#Planck-\\texttt{plic}-Reference">Planck <span>$\texttt{plic}$</span> Reference</a><a id="Planck-\\texttt{plic}-Reference-1"></a><a class="docs-heading-anchor-permalink" href="#Planck-\\texttt{plic}-Reference" title="Permalink"></a></h2><p>In various parts of the pipeline, we want to compare our results to the official 2018 data release. These routines load them from disk. They&#39;re automatically downloaded to the <code>plicref</code> directory specified in the configuration TOML.</p><pre><code class="language-julia">&quot;&quot;&quot;
+end</code></pre><pre class="documenter-example-output">signal_and_theory (generic function with 1 method)</pre><h2 id="Planck-\\texttt{plic}-Reference"><a class="docs-heading-anchor" href="#Planck-\\texttt{plic}-Reference">Planck <span>$\texttt{plic}$</span> Reference</a><a id="Planck-\\texttt{plic}-Reference-1"></a><a class="docs-heading-anchor-permalink" href="#Planck-\\texttt{plic}-Reference" title="Permalink"></a></h2><p>In various parts of the pipeline, we want to compare our results to the official 2018 data release. These routines load them from disk. They&#39;re automatically downloaded to the <code>plicref</code> directory specified in the configuration TOML.</p><pre><code class="language-julia">&quot;&quot;&quot;
     PlanckReferenceCov(plicrefpath::String)
 
 Stores the spectra and covariances of the reference plic analysis.
@@ -224,4 +226,4 @@ function extract_spec_and_cov(pl::PlanckReferenceCov, spec1)
     cl = pl.cls[pl.sub_indices[i]:(pl.sub_indices[i + 1] - 1)]
     err = sqrt.(diag(this_subcov))
     return ells, cl, err, this_subcov
-end</code></pre><pre class="documenter-example-output">Main.ex-util.extract_spec_and_cov</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../setup/">« setup.jl</a><a class="docs-footer-nextpage" href="../rawspectra/">rawspectra.jl »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 22 April 2021 18:31">Thursday 22 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre><pre class="documenter-example-output">Main.ex-util.extract_spec_and_cov</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../setup/">« setup.jl</a><a class="docs-footer-nextpage" href="../rawspectra/">rawspectra.jl »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 22 April 2021 18:40">Thursday 22 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
