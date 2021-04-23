@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>signalsim.jl · PSPipe Planck</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/so.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">PSPipe Planck</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../setup/">setup.jl</a></li><li><a class="tocitem" href="../util/">util.jl</a></li><li><a class="tocitem" href="../rawspectra/">rawspectra.jl</a></li><li><a class="tocitem" href="../fitnoisemodel/">fitnoisemodel.jl</a></li><li><a class="tocitem" href="../slurmgen/">slurmgen.jl</a></li><li class="is-active"><a class="tocitem" href>signalsim.jl</a></li><li><a class="tocitem" href="../pipeline/">Pipeline</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>signalsim.jl</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>signalsim.jl</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/simonsobs/PSpipe/tree/planckcov/project/Planck_cov/src/signalsim.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia">configfile, freq1, freq2, spec = ARGS</code></pre><pre class="documenter-example-output">5-element Vector{String}:
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>signalsim.jl · PSPipe Planck</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/so.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">PSPipe Planck</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../setup/">setup.jl</a></li><li><a class="tocitem" href="../util/">util.jl</a></li><li><a class="tocitem" href="../rawspectra/">rawspectra.jl</a></li><li><a class="tocitem" href="../fitnoisemodel/">fitnoisemodel.jl</a></li><li><a class="tocitem" href="../slurmgen/">slurmgen.jl</a></li><li class="is-active"><a class="tocitem" href>signalsim.jl</a></li><li><a class="tocitem" href="../pipeline/">Pipeline</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>signalsim.jl</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>signalsim.jl</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/simonsobs/PSpipe/tree/planckcov/project/Planck_cov/src/signalsim.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia">configfile, freq1, freq2, spec, nsims = ARGS</code></pre><pre class="documenter-example-output">6-element Vector{String}:
  &quot;example.toml&quot;
  &quot;143&quot;
  &quot;143&quot;
  &quot;EE&quot;
+ &quot;10&quot;
  &quot;--plot&quot;</pre><h1 id="Signal-Sims-(signalsim.jl)"><a class="docs-heading-anchor" href="#Signal-Sims-(signalsim.jl)">Signal Sims (signalsim.jl)</a><a id="Signal-Sims-(signalsim.jl)-1"></a><a class="docs-heading-anchor-permalink" href="#Signal-Sims-(signalsim.jl)" title="Permalink"></a></h1><p>This script runs signal simulations.</p><pre><code class="language-julia">using TOML
 using Plots
 using Healpix
@@ -60,42 +61,84 @@ parent: 1536×1536 Matrix{Float64}:
  0.0          1.5771e-12   6.97051e-13  …  0.00140868   0.314428</pre><pre><code class="language-">&quot;&quot;&quot;
     channelindex(s)
 
-Convert string/char T,E,B =&gt; 1,2,3</code></pre><p>&quot;&quot;&quot; function channelindex(s)     s = string(s)     if s == &quot;T&quot;         return 1     elseif s == &quot;E&quot;         return 2     elseif s == &quot;B&quot;         return 3     end     throw(ArgumentError(&quot;unknown spectrum&quot;)) end</p><p>function sim_iteration(𝐂, m1, m2, a1, a2, M, spec::String)     # get indices of the spectrum     c₁, c₂ = channelindex(spec[1]), channelindex(spec[2])</p><pre><code class="language-none"># zero out alms
-for i in 1:3
-    fill!(a1[i].alm, 0.0)
-    fill!(a2[i].alm, 0.0)
+Convert string/char T,E,B =&gt; 1,2,3
+&quot;&quot;&quot;
+function channelindex(s)
+    s = string(s)
+    if s == &quot;T&quot;
+        return 1
+    elseif s == &quot;E&quot;
+        return 2
+    elseif s == &quot;B&quot;
+        return 3
+    end
+    throw(ArgumentError(&quot;unknown spectrum&quot;))
 end
 
-# synthesize polarized spectrum into m1
-synalm!(𝐂, [a1[c₁], a2[c₂]])
-alm2map!(a1, m1)
-alm2map!(a2, m2)
+function sim_iteration(𝐂, m1, m2, a1, a2, M, spec::String)
+    # get indices of the spectrum
+    c₁, c₂ = channelindex(spec[1]), channelindex(spec[2])
 
-# same signal, but different masks
-mask!(m1, mask1, mask1)
-mask!(m2, mask2, mask2)
+    # zero out alms
+    for i in 1:3
+        fill!(a1[i].alm, 0.0)
+        fill!(a2[i].alm, 0.0)
+    end
 
-# subtract monopole if TT
-if spec == &quot;TT&quot;
-    monopole, dipole = fitdipole(m1.i * mask1)
-    subtract_monopole_dipole!(m1.i, monopole, dipole)
-    monopole, dipole = fitdipole(m2.i * mask2)
-    subtract_monopole_dipole!(m2.i, monopole, dipole)
+    # synthesize polarized spectrum into m1
+    synalm!(𝐂, [a1[c₁], a2[c₂]])
+    alm2map!(a1, m1)
+    alm2map!(a2, m2)
+
+    # same signal, but different masks
+    mask!(m1, mask1, mask1)
+    mask!(m2, mask2, mask2)
+
+    # subtract monopole if TT
+    if spec == &quot;TT&quot;
+        monopole, dipole = fitdipole(m1.i * mask1)
+        subtract_monopole_dipole!(m1.i, monopole, dipole)
+        monopole, dipole = fitdipole(m2.i * mask2)
+        subtract_monopole_dipole!(m2.i, monopole, dipole)
+    end
+
+    # apply pixel weights and then map2alm
+    Healpix.applyfullweights!(m1)
+    Healpix.applyfullweights!(m2)
+    map2alm!(m1, a1; niter=0)
+    map2alm!(m2, a2; niter=0)
+
+    if spec == &quot;EE&quot;
+        pCl_EE = SpectralVector(alm2cl(a1[c₁], a2[c₂]))
+        pCl_BB = SpectralVector(zeros(length(pCl_EE)))
+        @spectra Cl_EE, Cl_BB = M \ [pCl_EE; pCl_BB]
+        return Cl_EE
+    end
+
+    # otherwise easy mode coupling
+    pCl_XY = SpectralVector(alm2cl(a1[c₁], a2[c₂]))
+    return M \ pCl_XY
 end
 
-# apply pixel weights and then map2alm
-Healpix.applyfullweights!(m1)
-Healpix.applyfullweights!(m2)
-map2alm!(m1, a1; niter=0)
-map2alm!(m2, a2; niter=0)
+if &quot;--plot&quot; in ARGS
+    @time simEE = sim_iteration(𝐂, m1, m2, a1, a2, M, &quot;EE&quot;)
+    plot(simEE .* eachindex(simEE).^2, label=&quot;sim&quot;)
+    plot!(signal12[&quot;EE&quot;] .* eachindex(0:lmax_planck).^2, xlim=(0,lmax_planck), label=&quot;input&quot;)
+end</code></pre><p>This script generates many simulations.</p><pre><code class="language-julia">simpath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;signalsims&quot;,
+    &quot;$(freq1)_$(freq2)_$(spec)&quot;)
+mkpath(simpath)
 
-if spec == &quot;EE&quot;
-    pCl_EE = SpectralVector(alm2cl(a1[c₁], a2[c₂]))
-    pCl_BB = SpectralVector(zeros(length(pCl_EE)))
-    @spectra Cl_EE, Cl_BB = M \ [pCl_EE; pCl_BB]
-    return Cl_EE
-end
 
-# otherwise easy mode coupling
-pCl_XY = SpectralVector(alm2cl(a1[c₁], a2[c₂]))
-return M \ pCl_XY</code></pre><p>end</p><pre><code class="language-none"></code></pre><p>@example signalsim if &quot;–plot&quot; in ARGS     @time simEE = sim<em>iteration(𝐂, m1, m2, a1, a2, M, &quot;EE&quot;)     plot(simEE .* eachindex(simEE).^2, label=&quot;sim&quot;)     plot!(signal12[&quot;EE&quot;] .* eachindex(0:lmax</em>planck).^2, xlim=(0,lmax_planck), label=&quot;input&quot;) end</p><pre><code class="language-none"></code></pre><p>@example signalsim simpath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;signalsims&quot;,     &quot;<span>$(freq1)_$</span>(freq2)_spec&quot;) mkpath(simpath)</p><p>nsims = 5000 for sim<em>index in 1:nsims     @time cl = sim</em>iteration(𝐂, m1, m2, a1, a2, M, spec)     @save &quot;<span>$(simpath)/$</span>(uuid4()).jld2&quot; cl=cl end ```</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../slurmgen/">« slurmgen.jl</a><a class="docs-footer-nextpage" href="../pipeline/">Pipeline »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 22:04">Friday 23 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+for sim_index in 1:parse(Int,nsims)
+    @time cl = sim_iteration(𝐂, m1, m2, a1, a2, M, spec)
+    @save &quot;$(simpath)/$(uuid4()).jld2&quot; cl=cl
+end</code></pre><pre class="documenter-example-output">  1.284122 seconds (10.78 k allocations: 21.385 MiB)
+  1.286229 seconds (10.78 k allocations: 21.385 MiB)
+  1.306023 seconds (10.78 k allocations: 21.385 MiB)
+  1.284777 seconds (10.78 k allocations: 21.385 MiB)
+  1.339055 seconds (22.65 k allocations: 22.116 MiB, 3.01% gc time, 0.82% compilation time)
+  1.279854 seconds (10.78 k allocations: 21.385 MiB)
+  1.278425 seconds (10.78 k allocations: 21.385 MiB)
+  1.304320 seconds (10.78 k allocations: 21.385 MiB)
+  1.290279 seconds (10.78 k allocations: 21.385 MiB)
+  1.281248 seconds (10.78 k allocations: 21.385 MiB)</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../slurmgen/">« slurmgen.jl</a><a class="docs-footer-nextpage" href="../pipeline/">Pipeline »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 22:23">Friday 23 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
