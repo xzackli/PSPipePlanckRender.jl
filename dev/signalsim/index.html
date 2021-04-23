@@ -4,7 +4,7 @@
  &quot;143&quot;
  &quot;143&quot;
  &quot;EE&quot;
- &quot;--plot&quot;</pre><h1 id="Signal-Sims-(signalsim.jl)"><a class="docs-heading-anchor" href="#Signal-Sims-(signalsim.jl)">Signal Sims (signalsim.jl)</a><a id="Signal-Sims-(signalsim.jl)-1"></a><a class="docs-heading-anchor-permalink" href="#Signal-Sims-(signalsim.jl)" title="Permalink"></a></h1><p>This script runs signal simulations.</p><pre><code class="language-">using TOML
+ &quot;--plot&quot;</pre><h1 id="Signal-Sims-(signalsim.jl)"><a class="docs-heading-anchor" href="#Signal-Sims-(signalsim.jl)">Signal Sims (signalsim.jl)</a><a id="Signal-Sims-(signalsim.jl)-1"></a><a class="docs-heading-anchor-permalink" href="#Signal-Sims-(signalsim.jl)" title="Permalink"></a></h1><p>This script runs signal simulations.</p><pre><code class="language-julia">using TOML
 using Plots
 using Healpix
 using JLD2, UUIDs  # for saving sim arrays
@@ -16,7 +16,7 @@ run_name = config[&quot;general&quot;][&quot;name&quot;]
 spectrapath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;rawspectra&quot;)
 lmax = nside2lmax(nside)
 lmax_planck = min(2508, lmax)
-splits = &quot;1&quot;, &quot;2&quot;  # planck never uses any other splits</code></pre><pre><code class="language-">signal11, th = signal_and_theory(freq1, freq1, config)
+splits = &quot;1&quot;, &quot;2&quot;  # planck never uses any other splits</code></pre><pre class="documenter-example-output">(&quot;1&quot;, &quot;2&quot;)</pre><pre><code class="language-julia">signal11, th = signal_and_theory(freq1, freq1, config)
 signal12, th = signal_and_theory(freq1, freq2, config)
 signal22, th = signal_and_theory(freq2, freq2, config)
 signal = Dict((&quot;1&quot;, &quot;1&quot;) =&gt; signal11, (&quot;1&quot;, &quot;2&quot;) =&gt; signal12, (&quot;2&quot;, &quot;2&quot;) =&gt; signal22)
@@ -27,8 +27,7 @@ inds = 1:(lmax_planck+1)
 𝐂[1,1,inds] .= signal[splits[1], splits[1]][X * X][inds]
 𝐂[1,2,inds] .= signal[splits[1], splits[2]][X * Y][inds]
 𝐂[2,1,inds] .= signal[splits[1], splits[2]][X * Y][inds]
-𝐂[2,2,inds] .= signal[splits[2], splits[2]][Y * Y][inds];
-nothing #hide</code></pre><p>Next, we generate the mode-coupling matrix.</p><pre><code class="language-">m1 = PolarizedMap{Float64, RingOrder}(nside)
+𝐂[2,2,inds] .= signal[splits[2], splits[2]][Y * Y][inds];</code></pre><p>Next, we generate the mode-coupling matrix.</p><pre><code class="language-julia">m1 = PolarizedMap{Float64, RingOrder}(nside)
 m2 = PolarizedMap{Float64, RingOrder}(nside)
 a1 = [Alm(lmax, lmax) for i in 1:3]
 a2 = [Alm(lmax, lmax) for i in 1:3]
@@ -49,7 +48,16 @@ if spec == &quot;EE&quot;
     @time M = mcm(:EE_BB, map2alm(mask1), map2alm(mask2))
 else
     @time M = mcm(Symbol(X,Y), map2alm(mask1), map2alm(mask2))
-end</code></pre><pre><code class="language-">&quot;&quot;&quot;
+end</code></pre><pre class="documenter-example-output">BlockSpectralMatrix (column blocks=2, row blocks=2)
+row ℓ:    (0:767, 0:767)
+column ℓ: (0:767, 0:767)
+parent: 1536×1536 Matrix{Float64}:
+ 0.26852      0.000981304  0.156243     …  0.0          0.0
+ 0.000327101  0.113658     0.000298996     6.82557e-10  8.06949e-10
+ 0.0312486    0.000179397  0.313454        5.88147e-10  2.13995e-10
+ ⋮                                      ⋱               ⋮
+ 0.0          1.33573e-12  1.91829e-12     0.314428     0.00141052
+ 0.0          1.5771e-12   6.97051e-13  …  0.00140868   0.314428</pre><pre><code class="language-">&quot;&quot;&quot;
     channelindex(s)
 
 Convert string/char T,E,B =&gt; 1,2,3</code></pre><p>&quot;&quot;&quot; function channelindex(s)     s = string(s)     if s == &quot;T&quot;         return 1     elseif s == &quot;E&quot;         return 2     elseif s == &quot;B&quot;         return 3     end     throw(ArgumentError(&quot;unknown spectrum&quot;)) end</p><p>function sim_iteration(𝐂, m1, m2, a1, a2, M, spec::String)     # get indices of the spectrum     c₁, c₂ = channelindex(spec[1]), channelindex(spec[2])</p><pre><code class="language-none"># zero out alms
@@ -90,4 +98,4 @@ end
 
 # otherwise easy mode coupling
 pCl_XY = SpectralVector(alm2cl(a1[c₁], a2[c₂]))
-return M \ pCl_XY</code></pre><p>end</p><pre><code class="language-none"></code></pre><p>@example signalsim if &quot;–plot&quot; in ARGS     @time simEE = sim<em>iteration(𝐂, m1, m2, a1, a2, M, &quot;EE&quot;)     plot(simEE .* eachindex(simEE).^2, label=&quot;sim&quot;)     plot!(signal12[&quot;EE&quot;] .* eachindex(0:lmax</em>planck).^2, xlim=(0,lmax_planck), label=&quot;input&quot;) end</p><pre><code class="language-none"></code></pre><p>@example signalsim simpath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;signalsims&quot;,     &quot;<span>$(freq1)_$</span>(freq2)_spec&quot;) mkpath(simpath)</p><p>nsims = 5000 for sim<em>index in 1:nsims     @time cl = sim</em>iteration(𝐂, m1, m2, a1, a2, M, spec)     @save &quot;<span>$(simpath)/$</span>(uuid4()).jld2&quot; cl=cl end ```</p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 21:36">Friday 23 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+return M \ pCl_XY</code></pre><p>end</p><pre><code class="language-none"></code></pre><p>@example signalsim if &quot;–plot&quot; in ARGS     @time simEE = sim<em>iteration(𝐂, m1, m2, a1, a2, M, &quot;EE&quot;)     plot(simEE .* eachindex(simEE).^2, label=&quot;sim&quot;)     plot!(signal12[&quot;EE&quot;] .* eachindex(0:lmax</em>planck).^2, xlim=(0,lmax_planck), label=&quot;input&quot;) end</p><pre><code class="language-none"></code></pre><p>@example signalsim simpath = joinpath(config[&quot;dir&quot;][&quot;scratch&quot;], &quot;signalsims&quot;,     &quot;<span>$(freq1)_$</span>(freq2)_spec&quot;) mkpath(simpath)</p><p>nsims = 5000 for sim<em>index in 1:nsims     @time cl = sim</em>iteration(𝐂, m1, m2, a1, a2, M, spec)     @save &quot;<span>$(simpath)/$</span>(uuid4()).jld2&quot; cl=cl end ```</p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 21:52">Friday 23 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
