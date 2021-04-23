@@ -49,6 +49,7 @@ makedocs(
         "rawspectra.jl" => "rawspectra.md",
         "fitnoisemodel.jl" => "fitnoisemodel.md",
         "slurmgen.jl" => "slurmgen.md",
+        "signalsim.jl" => "signalsim.md",
 
         "Pipeline" => "pipeline.md"
         ]
